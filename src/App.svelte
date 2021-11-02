@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   import Card from "./Card.svelte";
-  export let name;
+  import {Cucamber} from "./Cucamber";
+  export let name: string;
   let deck = [];
   let pile = [];
   for (let i = 0; i < 5; i += 1)
