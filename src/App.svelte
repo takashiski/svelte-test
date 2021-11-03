@@ -44,11 +44,13 @@
   <hr>
   <table>
     <tr>
+      <td>ラウンド</td>
       <td>トリック</td>
       <td>ファーストプレイヤー</td>
       <td>最大</td>
     </tr>
     <tr>
+      <td>{G.round.count}</td>
       <td>{G.trickCount}</td>
       <td>{G.prevTrick.winner}</td>
       <td>{G.trick.biggest!=null?G.trick.biggest.num:""}</td>

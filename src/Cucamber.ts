@@ -105,6 +105,9 @@ function discard(G: IG, ctx: Ctx, index: number) {
       let loserId = G.players.reduce((p, c) => p.layout.num < c.layout.num ? c : p).id;
       G.players[loserId].cucamber += G.players.map(v => v.layout.cucamber).reduce((p, c) => c == 0 ? p * 2 : p + c);
       G.trickCount = 0;
+      G.round.count += 1;
+      G.deck = ctx.random.Shuffle(initDeck());
+      deal(G.players,G.deck);
     }
     else {
       G.players = G.players.map((v) => {
