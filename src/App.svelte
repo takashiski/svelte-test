@@ -68,7 +68,14 @@
     <tr>
       <td>きゅうり</td>
       {#each G.players as player}
-        <td>{player.cucamber}</td>
+        <td>
+          {#each {length:player.cucamber/5} as _,i }
+            🥛
+          {/each}
+          {#each {length:player.cucamber%5} as _,i }
+            🍼
+          {/each}
+        </td>
       {/each}
     </tr>
     <tr>
@@ -109,7 +116,7 @@
   main {
     text-align: center;
     padding: 1em;
-    max-width: 240px;
+    /* max-width: 240px; */
     margin: 0 auto;
   }
 
