@@ -35,7 +35,7 @@ export interface IG {
   };
   round: {
     count: number;
-    winner: number;
+    winner: string;
   };
   layout:ICard[];
   players: IPlayer[];
