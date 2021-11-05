@@ -35,11 +35,10 @@ function initPlayer(numPlayers: number) {
   }
   return players;
 }
-function deal(players: IPlayer[], deck: ICard[]) {
-  for (let i = 0; i < players.length; i += 1) {
-    players[i].hand=[];    
+function deal(G:IG,num:number) {
+  for (let i = 0; i < G.players.length; i += 1) {
     for (let j = 0; j < 7; j += 1) {
-      players[i].hand.push(deck.pop());
+      G.players[i].hand.push(G.deck.pop());
     }
   }
 }
@@ -56,7 +55,7 @@ export const generateCucamber = (numPlayers: number): Game => {
         deck: initDeck(),
       };
       G.deck = ctx.random.Shuffle(G.deck);
-      deal(G.players, G.deck);
+      deal(G,7);
 
       return G;
     },
@@ -103,8 +102,12 @@ function discard(G: IG, ctx: Ctx, index: number) {
       G.prevTrick.winner=null;
       G.trick.biggest=null;
       G.trick.winner=null;
+      G.players.map((player)=>{
+        player.layout=null;
+        player.hand=[];
+      });
       G.deck = ctx.random.Shuffle(initDeck());
-      deal(G.players,G.deck);
+      deal(G,7);
       console.log(`redeal`);
 
       console.log(`next player is default`);
