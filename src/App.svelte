@@ -69,10 +69,11 @@
       <td>きゅうり</td>
       {#each G.players as player}
         <td>
-          {#each {length:player.cucamber/5} as _,i }
+          <!-- {#each {length:player.cucamber/5} as _,i }
             🥛
-          {/each}
-          {#each {length:player.cucamber%5} as _,i }
+          {/each} -->
+          <!-- {#each {length:player.cucamber%5} as _,i } -->
+          {#each {length:player.cucamber} as _,i}
             🍼
           {/each}
         </td>
