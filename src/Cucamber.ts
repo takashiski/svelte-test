@@ -37,6 +37,7 @@ function initPlayer(numPlayers: number) {
 }
 function deal(players: IPlayer[], deck: ICard[]) {
   for (let i = 0; i < players.length; i += 1) {
+    players[i].hand=[];    
     for (let j = 0; j < 7; j += 1) {
       players[i].hand.push(deck.pop());
     }
@@ -66,20 +67,6 @@ export const generateCucamber = (numPlayers: number): Game => {
     moves: {
       discard,
     },
-    // endIf: (G: IG, ctx: Ctx) => {
-    //   let nullIndex = G.players.map(p => p.layout).indexOf(null);
-    //   if (nullIndex === -1) {
-    //     G.trick.count += 1;
-    //     G.players = G.players.map((v) => {
-    //       v.layout = null;
-    //       return v;
-    //     });
-    //     let firstPlayerIndex = G.players.indexOf(G.trick.winner).toString();
-    //     G.trick.biggest = null;
-    //     G.trick.winner = null;
-    //     return { next: firstPlayerIndex };
-    //   }
-    // },
     minPlayers: 3,
     maxPlayers: 8
   }
@@ -103,11 +90,27 @@ function discard(G: IG, ctx: Ctx, index: number) {
     if (G.trickCount == 7) {
       //ラウンド終了処理
       let loserId = G.players.reduce((p, c) => p.layout.num < c.layout.num ? c : p).id;
-      G.players[loserId].cucamber += G.players.map(v => v.layout.cucamber).reduce((p, c) => c == 0 ? p * 2 : p + c);
+      console.log(`loser is ${loserId}`);
+
+      let cucamber = G.players.map(v => v.layout.cucamber).reduce((p, c) => c == 0 ? p * 2 : p + c);
+      G.players[loserId].cucamber += cucamber;
+      console.log(`loser get ${cucamber} cucambers`);
+
+      console.log(`init trick state`);
       G.trickCount = 0;
       G.round.count += 1;
+      G.prevTrick.biggest=null;
+      G.prevTrick.winner=null;
+      G.trick.biggest=null;
+      G.trick.winner=null;
       G.deck = ctx.random.Shuffle(initDeck());
       deal(G.players,G.deck);
+      console.log(`redeal`);
+
+      console.log(`next player is default`);
+      ctx.events.endTurn();
+      return;
+      // ctx.events.endTurn({next:loserId.toString()});
     }
     else {
       G.players = G.players.map((v) => {
@@ -122,11 +125,13 @@ function discard(G: IG, ctx: Ctx, index: number) {
     G.trick.winner = null;
     console.log(`next trick's first player is ${G.prevTrick.winner}`);
     ctx.events.endTurn({ next: G.prevTrick.winner });
+    return;
     console.log("not reach here")
   }
   else {
     console.log("default order")
     ctx.events.endTurn();
+    return;
   }
 }
 
