@@ -26,6 +26,7 @@ export const DefaultPlayer: IPlayer = {
 };
 
 export interface IG {
+  currentPhase:string;
   trickCount:number;
   prevTrick:{
     biggest:ICard;

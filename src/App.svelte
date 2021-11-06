@@ -98,6 +98,12 @@
       {/each}
     </tr>
   </table>
+  {#if G.currentPhase == "trickResult"}
+  <button on:click={acceptTrickResult}>トリックの結果をみた</button>
+  {/if}
+  {#if G.currentPhase == "roundResult"}
+  <button on:click={acceptRountResult}>ラウンドの結果をみた</button>
+  {/if}
   <h2>手札</h2>
   <p>
     {currentPlayerId}
@@ -129,8 +135,6 @@
       {/each}
     </tr>
   </table>
-  <button on:click={acceptTrickResult}>トリックの結果をみた</button>
-  <button on:click={acceptRountResult}>ラウンドの結果をみた</button>
 </main>
 
 <style>

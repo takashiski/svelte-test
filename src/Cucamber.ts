@@ -10,6 +10,7 @@ export const generateCucamber = (numPlayers: number): Game => {
     setup: (ctx: Ctx, G: IG): IG => {
       G = {
         ...G,
+        currentPhase:"main",
         trickCount: 0,
         prevTrick: { winner: "0", biggest: null },
         trick: { winner: null, biggest: null },
@@ -143,12 +144,14 @@ function discard(G: IG, ctx: Ctx, index: number) {
       //ラウンド終了処理
       // finishRound(G, ctx);
       console.log(`next player is default`);
+      G.currentPhase = "roundResult";
       ctx.events.setPhase("roundResult");
       return;
     }
     else {
       //go next trick
       setTrickWinner(G,ctx);
+      G.currentPhase = "trickResult";
       ctx.events.setPhase("trickResult");
       return;
     }
@@ -173,10 +176,12 @@ function acceptTrickResult(G: IG, ctx: Ctx) {
   G.trick.winner = null;
   console.log(`next trick's first player is ${G.prevTrick.winner}`);
   ctx.events.endTurn({ next: G.prevTrick.winner });
+  G.currentPhase = "main";
   ctx.events.setPhase("main");
 }
 function acceptRoundResult(G: IG, ctx: Ctx) {
   //ラウンド初期化
   finishRound(G,ctx);
+  G.currentPhase="main";
   ctx.events.setPhase("main");
 }
