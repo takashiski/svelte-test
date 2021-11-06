@@ -5,17 +5,15 @@ import { DefaultPlayer } from "./types/types";
 
 
 
-export const generateCucamber = (numPlayers: number): Game => {
-  return {
-    setup: (ctx: Ctx, G: IG): IG => {
-      G = {
-        ...G,
+export const Cucamber:Game = {
+    setup: (ctx: Ctx, setupData:any): IG => {
+      const G = {
         currentPhase:"main",
         trickCount: 0,
         prevTrick: { winner: "0", biggest: null },
         trick: { winner: null, biggest: null },
         round: { count: 0, winner: null },
-        players: initPlayer(numPlayers),
+        players: initPlayer(ctx.numPlayers),
         deck: initDeck(),
       };
       G.deck = ctx.random.Shuffle(G.deck);
@@ -38,7 +36,7 @@ export const generateCucamber = (numPlayers: number): Game => {
     },
     minPlayers: 3,
     maxPlayers: 8
-  }
+  
 };
 
 
@@ -48,7 +46,7 @@ function initDeck() {
   let deck: ICard[] = [];
   const numberRange = { min: 1, max: 15 };
   const numberOfSameCard = 4;
-  function cucamber(n: number) {
+  function convertNumToCucamber(n: number) {
     //https://akiyosblog.com/?p=1264
     if (n == 1) return 0;
     if (n < 6) return 1;
@@ -61,7 +59,7 @@ function initDeck() {
     for (let j = 0; j < numberOfSameCard; j += 1) {
       deck.push({
         num: i,
-        cucamber: cucamber(i),
+        cucamber: convertNumToCucamber(i),
         clicked: false
       });
     }
@@ -70,7 +68,7 @@ function initDeck() {
 
   return deck;
 }
-function initPlayer(numPlayers: number) {
+function initPlayer(numPlayers: number):IPlayer[] {
   const players = [];
   for (let i = 0; i < numPlayers; i += 1) {
     players.push({ id: i, hand: [], layout: null, cucamber: 0 });

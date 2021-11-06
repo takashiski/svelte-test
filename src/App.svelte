@@ -1,13 +1,14 @@
 <script lang="ts">
   import { Client } from "boardgame.io/client";
-  import { generateCucamber } from "./Cucamber";
+  import { Cucamber } from "./Cucamber";
   import type { ICard, IState, IG } from "./types/types";
+  import Rules from "./Rules.svelte";
   let cards: ICard[] = [];
   let currentPlayerId = "";
   let layouts: (ICard | null)[] = [];
   let G: IG = null;
   const client = Client({
-    game: generateCucamber(3),
+    game: Cucamber,
     numPlayers: 3,
     debug: true,
   });
@@ -46,6 +47,8 @@
     Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
     how to build Svelte apps.
   </p> -->
+  <Rules/>
+
   <h2>情報</h2>
   <hr />
   <table>
@@ -162,7 +165,7 @@
   }
   td {
     height: 50px;
-    border: solid 1px;
+    /* border: solid 1px; */
   }
   .card {
     border: solid 1px;

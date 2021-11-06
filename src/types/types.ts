@@ -40,7 +40,6 @@ export interface IG {
     count: number;
     winner: string;
   };
-  layout:ICard[];
   players: IPlayer[];
   deck: ICard[];
 }
