@@ -31,6 +31,12 @@
     console.log(index);
     client.moves.discard(index);
   }
+  function acceptRountResult(e:Event){
+    client.moves.acceptRoundResult();
+  }
+  function acceptTrickResult(e:Event){
+    client.moves.acceptTrickResult();
+  }
 </script>
 
 <main>
@@ -98,7 +104,8 @@
   </p>
   <table>
     <tr>
-      {#each cards as c, i (c)}
+      <!-- {#each cards as c, i (c)} -->
+      {#each cards.sort((a,b)=>a.num<b.num?-1:1) as c, i (c)}
         {#if G.trick.biggest == null || G.trick.biggest.num <= c.num}
           <td
             class="card discardable-bigger"
@@ -122,6 +129,8 @@
       {/each}
     </tr>
   </table>
+  <button on:click={acceptTrickResult}>トリックの結果をみた</button>
+  <button on:click={acceptRountResult}>ラウンドの結果をみた</button>
 </main>
 
 <style>
