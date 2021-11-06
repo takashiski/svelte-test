@@ -12,12 +12,14 @@ export interface ICard {
 
 export interface IPlayer {
   id:number;
+  name:string;
   hand: ICard[];
   layout: ICard;
   cucamber: number;
 }
 export const DefaultPlayer: IPlayer = {
   id:null,
+  name:null,
   hand: [],
   layout: null,
   cucamber: 0,
