@@ -80,6 +80,7 @@ function deal(G: IG, num: number) {
     for (let j = 0; j < 7; j += 1) {
       G.players[i].hand.push(G.deck.pop());
     }
+  G.players[i].hand = G.players[i].hand.sort((a,b)=>a.num<b.num?-1:1);
   }
 }
 
