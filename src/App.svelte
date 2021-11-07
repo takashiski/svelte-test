@@ -1,8 +1,10 @@
 <script lang="ts">
   import { Client } from "boardgame.io/client";
+  import {Local} from "boardgame.io/multiplayer";
   import { Cucamber } from "./Cucamber";
   import type { ICard, IState, IG } from "./types/types";
   import Rules from "./Rules.svelte";
+  import Player from "./Player.svelte";
   let cards: ICard[] = [];
   let currentPlayerId = "";
   let layouts: (ICard | null)[] = [];
@@ -69,13 +71,13 @@
   <h2>場札</h2>
   <table>
     <tr>
-      <td>プレイヤーID</td>
+      <th>プレイヤーID</th>
       {#each layouts as layout, i}
         <td>{i}</td>
       {/each}
     </tr>
     <tr>
-      <td>きゅうり</td>
+      <th>きゅうり</th>
       {#each G.players as player}
         <td>
           <!-- {#each {length:player.cucamber/5} as _,i }
@@ -89,18 +91,26 @@
       {/each}
     </tr>
     <tr>
-      <td>手札枚数</td>
+      <th>手札枚数</th>
       {#each G.players as player}
         <td>{player.hand.length}</td>
       {/each}
     </tr>
     <tr>
-      <td>場札</td>
+      <th>場札</th>
       {#each layouts as layout}
         <td class="card">{layout != null ? layout.num : ""}</td>
       {/each}
     </tr>
   </table>
+  <hr>
+  {#each G.players as player}
+    {#if player.id.toString() != currentPlayerId}
+      <Player {player}/>
+    {/if}
+  {/each}
+ <hr>
+  <Player player={G.players[currentPlayerId]}/>
   {#if G.currentPhase == "trickResult"}
   <button on:click={acceptTrickResult}>トリックの結果をみた</button>
   {/if}
@@ -142,7 +152,7 @@
 
 <style>
   main {
-    text-align: center;
+    /* text-align: center; */
     padding: 1em;
     /* max-width: 240px; */
     margin: 0 auto;
@@ -163,9 +173,13 @@
   table {
     align-content: center;
   }
+  tr{
+    height:50px;
+    border:solid 1px #ccffff;
+  }
   td {
     height: 50px;
-    /* border: solid 1px; */
+    border: solid 1px;
   }
   .card {
     border: solid 1px;
