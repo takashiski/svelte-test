@@ -14,8 +14,8 @@
   let numOfPlayers: number = 2;
 
   const {protocol,hostname,port} = window.location;
-  const serverUrl = `${protocol}//${hostname}:${port}`;
-  // const serverUrl = "https://vast-reaches-25264.herokuapp.com:8000";
+  // const serverUrl = `${protocol}//${hostname}:${port}`;
+  const serverUrl = "https://vast-reaches-25264.herokuapp.com:8000";
   // const serverUrl = "http://localhost:8000";
   const lobbyClient = new LobbyClient({ server: serverUrl });
   async function listGames() {
