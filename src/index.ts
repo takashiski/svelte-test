@@ -43,9 +43,15 @@ const frontEndAppBuildPath = path.resolve(__dirname, "../public");
 console.log(frontEndAppBuildPath)
 server.app.use(serve(frontEndAppBuildPath));
 
-server.run(PORT, () => {
-  server.app.use(
-    async (ctx, next) => await serve(frontEndAppBuildPath)(Object.assign(ctx, { path: "index.html" }), next
-    ));
-});
-// const { apiServer, appServer } = server.run(8000, () => console.log("running on http://localhost:8000"));
+// if (process.env.NODE_ENV == "production") {
+  console.log("run production")
+  server.run(PORT, () => {
+    server.app.use(
+      async (ctx, next) => await serve(frontEndAppBuildPath)(Object.assign(ctx, { path: "index.html" }), next
+      ));
+  });
+// }
+// else {
+//   console.log("run dev");
+//   const { apiServer, appServer } = server.run(8000, () => console.log("running on http://localhost:8000"));
+// }
