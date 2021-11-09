@@ -3,47 +3,48 @@ import type { ICard, IG, IPlayer } from "./types/types";
 import { DefaultPlayer } from "./types/types";
 
 
-function LOG(any){
+function LOG(any) {
   console.log(`[LOG] ${any}`);
 }
 
 
 
-export const Cucamber:Game = {
-  name:"Cucamber",
-    setup: (ctx: Ctx, setupData:any): IG => {
-      const G = {
-        currentPhase:"main",
-        trickCount: 0,
-        prevTrick: { winner: "0", biggest: null },
-        trick: { winner: null, biggest: null },
-        round: { count: 0, winner: null },
-        players: initPlayer(ctx.numPlayers),
-        deck: initDeck(),
-      };
-      G.deck = ctx.random.Shuffle(G.deck);
-      deal(G, 7);
-      LOG("setup, init G");
+export const Cucamber: Game = {
+  name: "Cucamber",
+  setup: (ctx: Ctx, setupData: any): IG => {
+    const G = {
+      currentPhase: "main",
+      trickCount: 0,
+      prevTrick: { winner: "0", biggest: null },
+      trick: { winner: null, biggest: null },
+      round: { count: 0, winner: null },
+      players: initPlayer(ctx.numPlayers),
+      deck: initDeck(),
+    };
+    G.deck = ctx.random.Shuffle(G.deck);
+    deal(G, 7);
+    LOG("setup, init G");
 
-      return G;
-    },
-    turn: {
-      stages:{
-        main: {
-          moves: { discard },
-        },
-        trickResult:{
-          moves:{acceptTrickResult}
-        },
-        roundResult: {
-          moves: { acceptRoundResult },
-        },
+    return G;
+  },
+  moves: { discard },
+  turn: {
+    stages: {
+      main: {
+        moves: { discard },
       },
-      minMoves:1
+      trickResult: {
+        moves: { acceptTrickResult }
+      },
+      roundResult: {
+        moves: { acceptRoundResult },
+      },
     },
-    minPlayers: 3,
-    maxPlayers: 8
-  
+    minMoves: 1
+  },
+  minPlayers: 3,
+  maxPlayers: 8
+
 };
 
 
@@ -76,7 +77,7 @@ function initDeck() {
 
   return deck;
 }
-function initPlayer(numPlayers: number):IPlayer[] {
+function initPlayer(numPlayers: number): IPlayer[] {
   const players = [];
   for (let i = 0; i < numPlayers; i += 1) {
     players.push({ id: i, hand: [], layout: null, cucamber: 0 });
@@ -89,7 +90,7 @@ function deal(G: IG, num: number) {
     for (let j = 0; j < 7; j += 1) {
       G.players[i].hand.push(G.deck.pop());
     }
-  G.players[i].hand = G.players[i].hand.sort((a,b)=>a.num<b.num?-1:1);
+    G.players[i].hand = G.players[i].hand.sort((a, b) => a.num < b.num ? -1 : 1);
   }
   LOG("deal cards")
 }
@@ -158,18 +159,18 @@ function discard(G: IG, ctx: Ctx, index: number) {
       console.log(`next player is default`);
       G.currentPhase = "roundResult";
       ctx.events.setActivePlayers({
-        currentPlayer:"roundResult",
-        others:"roundResult"
+        currentPlayer: "roundResult",
+        others: "roundResult"
       })
       return;
     }
     else {
       //go next trick
-      setTrickWinner(G,ctx);
+      setTrickWinner(G, ctx);
       G.currentPhase = "trickResult";
       ctx.events.setActivePlayers({
-        currentPlayer:"trickResult",
-        others:"trickResult"
+        currentPlayer: "trickResult",
+        others: "trickResult"
       });
       return;
     }
@@ -197,20 +198,20 @@ function acceptTrickResult(G: IG, ctx: Ctx) {
   ctx.events.endTurn({ next: G.prevTrick.winner });
   G.currentPhase = "main";
   ctx.events.setActivePlayers({
-    currentPlayer:"main",
-    others:"main"
+    currentPlayer: "main",
+    others: "main"
   });
-  ctx.events.endTurn({next:G.trick.winner});
+  ctx.events.endTurn({ next: G.trick.winner });
 }
 function acceptRoundResult(G: IG, ctx: Ctx) {
   LOG("init round")
   //ラウンド初期化
-  finishRound(G,ctx);
-  G.currentPhase="main";
+  finishRound(G, ctx);
+  G.currentPhase = "main";
   ctx.events.setActivePlayers({
-    currentPlayer:"main",
-    others:"main"
+    currentPlayer: "main",
+    others: "main"
   });
-  ctx.events.endTurn({next:G.round.winner});
+  ctx.events.endTurn({ next: G.round.winner });
   ctx.events.endTurn();
 }
