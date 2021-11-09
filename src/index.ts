@@ -39,7 +39,8 @@ const server = Server({
   // transport:new SocketIO()
 });
 const PORT = process.env.PORT || 8000;
-const frontEndAppBuildPath = path.resolve(__dirname, "./build");
+const frontEndAppBuildPath = path.resolve(__dirname, "../public");
+console.log(frontEndAppBuildPath)
 server.app.use(serve(frontEndAppBuildPath));
 
 server.run(PORT, () => {
