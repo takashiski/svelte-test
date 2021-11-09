@@ -3,9 +3,14 @@ import type { ICard, IG, IPlayer } from "./types/types";
 import { DefaultPlayer } from "./types/types";
 
 
+function LOG(any){
+  console.log(`[LOG] ${any}`);
+}
+
 
 
 export const Cucamber:Game = {
+  name:"Cucamber",
     setup: (ctx: Ctx, setupData:any): IG => {
       const G = {
         currentPhase:"main",
@@ -18,10 +23,13 @@ export const Cucamber:Game = {
       };
       G.deck = ctx.random.Shuffle(G.deck);
       deal(G, 7);
+      LOG("setup, init G");
 
       return G;
     },
-    turn: {},
+    turn: {
+      minMoves:1
+    },
     phases: {
       main: {
         moves: { discard },
@@ -64,7 +72,8 @@ function initDeck() {
       });
     }
   }
-  console.log(deck.length);
+  LOG("init deck, deck length is below");
+  LOG(deck.length);
 
   return deck;
 }
@@ -73,6 +82,7 @@ function initPlayer(numPlayers: number):IPlayer[] {
   for (let i = 0; i < numPlayers; i += 1) {
     players.push({ id: i, hand: [], layout: null, cucamber: 0 });
   }
+  LOG("init players")
   return players;
 }
 function deal(G: IG, num: number) {
@@ -82,10 +92,12 @@ function deal(G: IG, num: number) {
     }
   G.players[i].hand = G.players[i].hand.sort((a,b)=>a.num<b.num?-1:1);
   }
+  LOG("deal cards")
 }
 
 
 function calculateRoundResult(G: IG, ctx: Ctx) {
+  LOG("calculate round result");
   let loserId = G.players.reduce((p, c) => p.layout.num < c.layout.num ? c : p).id;
   console.log(`loser is ${loserId}`);
 
@@ -95,6 +107,7 @@ function calculateRoundResult(G: IG, ctx: Ctx) {
 }
 
 function finishRound(G: IG, ctx: Ctx) {
+  LOG("close round")
   console.log(`init trick state`);
   G.trickCount = 0;
   G.round.count += 1;
@@ -126,6 +139,7 @@ function setTrickWinner(G: IG, ctx: Ctx) {
  * @returns 
  */
 function discard(G: IG, ctx: Ctx, index: number) {
+  LOG("discard");
   console.log(`${ctx.playOrder} ${ctx.playOrderPos}`);
   //layout and remove 
   let player = G.players[ctx.currentPlayer];
@@ -164,6 +178,7 @@ function discard(G: IG, ctx: Ctx, index: number) {
 
 
 function acceptTrickResult(G: IG, ctx: Ctx) {
+  LOG("init trick")
   //トリック初期化
   G.players = G.players.map((v) => {
     v.layout = null;
@@ -179,6 +194,7 @@ function acceptTrickResult(G: IG, ctx: Ctx) {
   ctx.events.setPhase("main");
 }
 function acceptRoundResult(G: IG, ctx: Ctx) {
+  LOG("init round")
   //ラウンド初期化
   finishRound(G,ctx);
   G.currentPhase="main";
