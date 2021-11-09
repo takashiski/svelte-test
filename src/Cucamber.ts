@@ -28,19 +28,18 @@ export const Cucamber:Game = {
       return G;
     },
     turn: {
+      stages:{
+        main: {
+          moves: { discard },
+        },
+        trickResult:{
+          moves:{acceptTrickResult}
+        },
+        roundResult: {
+          moves: { acceptRoundResult },
+        },
+      },
       minMoves:1
-    },
-    phases: {
-      main: {
-        moves: { discard },
-        start: true
-      },
-      trickResult:{
-        moves:{acceptTrickResult}
-      },
-      roundResult: {
-        moves: { acceptRoundResult },
-      },
     },
     minPlayers: 3,
     maxPlayers: 8
@@ -158,14 +157,20 @@ function discard(G: IG, ctx: Ctx, index: number) {
       // finishRound(G, ctx);
       console.log(`next player is default`);
       G.currentPhase = "roundResult";
-      ctx.events.setPhase("roundResult");
+      ctx.events.setActivePlayers({
+        currentPlayer:"roundResult",
+        others:"roundResult"
+      })
       return;
     }
     else {
       //go next trick
       setTrickWinner(G,ctx);
       G.currentPhase = "trickResult";
-      ctx.events.setPhase("trickResult");
+      ctx.events.setActivePlayers({
+        currentPlayer:"trickResult",
+        others:"trickResult"
+      });
       return;
     }
   }
@@ -191,12 +196,21 @@ function acceptTrickResult(G: IG, ctx: Ctx) {
   console.log(`next trick's first player is ${G.prevTrick.winner}`);
   ctx.events.endTurn({ next: G.prevTrick.winner });
   G.currentPhase = "main";
-  ctx.events.setPhase("main");
+  ctx.events.setActivePlayers({
+    currentPlayer:"main",
+    others:"main"
+  });
+  ctx.events.endTurn({next:G.trick.winner});
 }
 function acceptRoundResult(G: IG, ctx: Ctx) {
   LOG("init round")
   //ラウンド初期化
   finishRound(G,ctx);
   G.currentPhase="main";
-  ctx.events.setPhase("main");
+  ctx.events.setActivePlayers({
+    currentPlayer:"main",
+    others:"main"
+  });
+  ctx.events.endTurn({next:G.round.winner});
+  ctx.events.endTurn();
 }
