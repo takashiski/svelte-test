@@ -46,6 +46,7 @@ import { identity, text } from "svelte/internal";
     matchId = tempMatchId.toString();
   }
   async function join() {
+    playerId="0";
     const { playerCredentials } = await lobbyClient.joinMatch(
       "Cucamber",
       matchId,
@@ -101,7 +102,7 @@ import { identity, text } from "svelte/internal";
 {:else}
   {#if credentials == ""}
     <p>部屋ID : {matchId}</p>
-    {#each { length: numOfPlayers } as _, i}
+    <!-- {#each { length: numOfPlayers } as _, i}
       <label>
         <input
           type="radio"
@@ -111,7 +112,7 @@ import { identity, text } from "svelte/internal";
         />
         {i}
       </label><br />
-    {/each}
+    {/each} -->
     <!-- <input type="number" bind:value={inputNumber}/> -->
     <!-- <button on:click={setPlayerId}>id決定</button><br> -->
     <button on:click={join}>ゲームに入る</button>
