@@ -12,6 +12,8 @@
   export let playerId: string = "";
   export let matchId: string = "default";
   export let credentials: string = "";
+  export let serverUrl:string;
+  export let numOfPlayers:number;
   let cards: ICard[] = [];
   let selectedCard: ICard;
   let selectedIndex: number;
@@ -25,8 +27,8 @@
 
   const client = Client({
     game: Cucamber,
-    multiplayer: SocketIO({ server: "localhost:8000" }),
-    numPlayers: 2,
+    multiplayer: SocketIO({ server: serverUrl }),
+    numPlayers: numOfPlayers,
     matchID: matchId,
     playerID: playerId,
     credentials: credentials,

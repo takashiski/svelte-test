@@ -1,53 +1,64 @@
 <script lang="ts">
   import CucamberClient from "./CucamberClient.svelte";
-  import {LobbyClient} from "boardgame.io/client";
-import Player from "./Player.svelte";
-import type { LobbyAPI } from "boardgame.io";
-  let playerId:string="";
-  let matchId:string="";
-  let credentials:string="";
-  let tempMatchId:String="default";
-  let inputNumber:number;
-  let gameLists:string[];
-  let matches:LobbyAPI.Match[];
-  let numOfPlayers:number=2;
+  import { LobbyClient } from "boardgame.io/client";
+  import Player from "./Player.svelte";
+  import type { LobbyAPI } from "boardgame.io";
+  let playerId: string = "";
+  let playerName: string ="";
+  let matchId: string = "";
+  let credentials: string = "";
+  let tempMatchId: String = "default";
+  let inputNumber: number;
+  let gameLists: string[];
+  let matches: LobbyAPI.Match[];
+  let numOfPlayers: number = 2;
 
-  const lobbyClient = new LobbyClient({server: "http://localhost:8000"});
-  async function listGames(){
+  const {protocol,hostname,port} = window.location;
+  const serverUrl = `${protocol}//${hostname}:${port}`;
+  // const serverUrl = "https://vast-reaches-25264.herokuapp.com:8000";
+  // const serverUrl = "http://localhost:8000";
+  const lobbyClient = new LobbyClient({ server: serverUrl });
+  async function listGames() {
     gameLists = await lobbyClient.listGames();
     console.log(gameLists);
   }
-  async function listMatches(){
-    matches = (await lobbyClient.listMatches("Cucamber")).matches.map(match=>match);
-    matches.map(match=>console.log(match));
+  async function listMatches() {
+    matches = (await lobbyClient.listMatches("Cucamber")).matches.map(
+      (match) => match
+    );
+    matches.map((match) => console.log(match));
   }
-  async function setPlayerId(){
-    playerId=inputNumber.toString();
+  async function setPlayerId() {
+    playerId = inputNumber.toString();
     console.log(playerId);
-
   }
-  async function createMatch(){
-    const {matchID} = await lobbyClient.createMatch("Cucamber",{
-      numPlayers:2
+  async function createMatch() {
+    const { matchID } = await lobbyClient.createMatch("Cucamber", {
+      numPlayers: 2,
     });
     matchId = matchID;
   }
-  async function setMatchId(){
+  async function setMatchId() {
     matchId = tempMatchId.toString();
   }
-  async function join(){
-    const {playerCredentials} = await lobbyClient.joinMatch("Cucamber",matchId,{
-      playerID:playerId,
-      playerName:"Bob"
-    });
+  async function join() {
+    const { playerCredentials } = await lobbyClient.joinMatch(
+      "Cucamber",
+      matchId,
+      {
+        playerID: playerId,
+        playerName: playerName,
+      }
+    );
     console.log(playerCredentials);
     credentials = playerCredentials;
   }
 </script>
+
 <!-- <button on:click={listGames}>ゲーム一覧</button> -->
 <div>
-<button on:click={listMatches}>部屋一覧</button><br/>
-<!-- {#each matches as match}
+  <button on:click={listMatches}>部屋一覧</button><br />
+  <!-- {#each matches as match}
   {match.matchID}
   {#each match.players as player}
     {player.name}
@@ -55,25 +66,34 @@ import type { LobbyAPI } from "boardgame.io";
 {/each} -->
 </div>
 {#if matchId == ""}
-<button on:click={createMatch}>部屋を作成する</button><br/>
-<input type="text" bind:value={tempMatchId}>
-<button on:click={setMatchId}>このIDの部屋に参加する</button><br/>
+  プレイヤー人数：
+  <input type="number" bind:value={numOfPlayers}/><br/>
+  <button on:click={createMatch}>部屋を作成する</button><br />
+  or <br/>
+  <input type="text" bind:value={tempMatchId} />
+  <button on:click={setMatchId}>このIDの部屋に参加する</button><br />
 {:else}
-{#if credentials==""}
-<p>部屋ID : {matchId}</p>
-{#each {length:numOfPlayers} as _,i}
-<label>
-<input type="radio" bind:group={playerId} name="pid" value={i.toString()}>
-{i}
-</label><br/>
-{/each}
-<!-- <input type="number" bind:value={inputNumber}/> -->
-<!-- <button on:click={setPlayerId}>id決定</button><br> -->
-<button on:click={join}>ゲームに入る</button>
-{/if}
-{#if credentials!=""}
-<CucamberClient playerId={playerId} matchId={matchId} credentials={credentials}/>
-{/if}
+  {#if credentials == ""}
+    <p>部屋ID : {matchId}</p>
+    プレイヤー名：<input type="text" bind:value={playerName}/>
+    {#each { length: numOfPlayers } as _, i}
+      <label>
+        <input
+          type="radio"
+          bind:group={playerId}
+          name="pid"
+          value={i.toString()}
+        />
+        {i}
+      </label><br />
+    {/each}
+    <!-- <input type="number" bind:value={inputNumber}/> -->
+    <!-- <button on:click={setPlayerId}>id決定</button><br> -->
+    <button on:click={join}>ゲームに入る</button>
+  {/if}
+  {#if credentials != ""}
+    <CucamberClient {playerId} {matchId} {credentials} {numOfPlayers} {serverUrl} />
+  {/if}
 {/if}
 <!-- <CucamberClient playerId="0"/> -->
 <!-- <CucamberClient playerId="1"/> -->

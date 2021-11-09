@@ -1,8 +1,10 @@
-export{}
+export { }
 // require=require("esm")(module);
 // require("dotenv").config();
-const {Server,Origins,SocketIO} = require("boardgame.io/server");
-const {Cucamber} = require("./Cucamber");
+const { Server, Origins, SocketIO } = require("boardgame.io/server");
+const { Cucamber } = require("./Cucamber");
+const serve = require("koa-static");
+const path = require("path");
 // const admin = require("firebase-admin");
 // const {Firestore} = require("bgio-firebase");
 // const fs = require("fs");
@@ -27,11 +29,20 @@ const {Cucamber} = require("./Cucamber");
 // const database = new Firestore();
 
 const server = Server({
-  games:[Cucamber],
+  games: [Cucamber],
+  origins:[Origins.LOCALHOST_IN_DEVELOPMENT,"https://vast-reaches-25264.herokuapp.com/"]
   // db:database,
-  origins:Origins.LOCALHOST,
+  // origins:Origins.LOCALHOST,
   // localhost:["http://localhost"],
   // transport:new SocketIO()
 });
+const PORT = process.env.PORT || 8000;
+const frontEndAppBuildPath = path.resolve(__dirname,"./build");
+server.app.use(serve(frontEndAppBuildPath));
 
-const {apiServer,appServer} = server.run(8000,()=>console.log("running on http://localhost:8000"));
+server.run(PORT,()=>{
+  server.app.use(
+    async (ctx,next)=>await serve(frontEndAppBuildPath)(Object.assign(ctx,{path:"index.html"}),next
+  ));
+});
+// const { apiServer, appServer } = server.run(8000, () => console.log("running on http://localhost:8000"));

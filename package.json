@@ -2,13 +2,14 @@
   "name": "svelte-app",
   "version": "1.0.0",
   "private": true,
+  "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && npx tsc",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear",
+    "defaultstart": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "serve-build": "npx tsc",
-    "serve": "node -r esm dist/index.js"
+    "start": "node -r esm dist/index.js"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -35,6 +36,7 @@
     "esm": "^3.2.25",
     "firebase-admin": "^10.0.0",
     "flatted": "^3.2.2",
+    "koa-static": "^5.0.0",
     "sirv-cli": "^1.0.0"
   }
 }
