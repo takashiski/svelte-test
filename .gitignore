@@ -1,4 +1,8 @@
 /node_modules/
 /public/build/
+/dist
+serviceAccountKey.json
+.env*
+.firebaserc
 
 .DS_Store
