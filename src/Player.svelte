@@ -2,14 +2,19 @@
   import type { IPlayer } from "./types/types";
 
   export let player: IPlayer;
+  export let currentPlayerId:string;
 </script>
 
 <div class="player">
   <p>
     PlayerID : {player.id}
   </p>
-  <p class="card">
-    {player.layout != null ? player.layout.num : "none"}
+  <p>
+    🦗 : {player.cucamber}
+  </p>
+  <p class="card bold">
+  <!-- <p class="card {player.id.toString() == currentPlayerId?"bold":""}"> -->
+    {player.layout != null ? player.layout.num : "none"}<br>
     {#each { length: player.layout != null ? player.layout.cucamber : 0 } as _, i}
       🦗
     {/each}
@@ -18,13 +23,16 @@
 
 <style>
   .player {
-    background-color: #b2ffffcc;
-    border:1px solid;
+    background-color: #a9ffffcc;
+    /* border:1px solid; */
     /* height: 200px; */
     width: 150px;
     text-align: center;
     vertical-align: middle;
     display: inline-block;
+  }
+  .bold{
+    border:1px solid;
   }
   p.card {
     margin-left: auto;
