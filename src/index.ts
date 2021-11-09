@@ -31,8 +31,8 @@ const path = require("path");
 const server = Server({
   games: [Cucamber],
   origins: [Origins.LOCALHOST_IN_DEVELOPMENT,
-    "https://vast-reaches-25264.herokuapp.com/",
-    "https://optimistic-ritchie-26665a.netlify.app/"]
+    "https://vast-reaches-25264.herokuapp.com",
+    "https://optimistic-ritchie-26665a.netlify.app"]
   // db:database,
   // origins:Origins.LOCALHOST,
   // localhost:["http://localhost"],
