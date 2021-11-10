@@ -41,7 +41,7 @@
   }
   async function createMatch() {
     const { matchID } = await lobbyClient.createMatch("Cucamber", {
-      numPlayers: 2,
+      numPlayers: numOfPlayers,
     });
     matchId = matchID;
     console.log(`create new room ${matchID}`);
@@ -123,7 +123,7 @@
   </div>
 {:else}
   {#if credentials == ""}
-    <p>部屋ID : {matchId} (これをいっしょにプレイしたい人に伝えてください)</p>
+    <p>部屋ID : {matchId} </p>
     <button on:click={join}>ゲームに入る</button>
   {/if}
   {#if credentials != ""}
