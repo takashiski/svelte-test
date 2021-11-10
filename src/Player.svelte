@@ -5,9 +5,9 @@
   export let currentPlayerId:string;
 </script>
 
-<div class="player">
+<div class="player {player.id.toString()== currentPlayerId?'current-player':''}">
   <p>
-    PlayerID : {player.id}
+    {player.id} {player.name}
   </p>
   <p>
     🦗 : {player.cucamber}
@@ -23,13 +23,16 @@
 
 <style>
   .player {
-    background-color: #a9ffffcc;
+    /* background-color: #a9ffffcc; */
     /* border:1px solid; */
     /* height: 200px; */
     width: 150px;
     text-align: center;
     vertical-align: middle;
     display: inline-block;
+  }
+  .current-player{
+    background-color: #a9ffffcc;
   }
   .bold{
     border:1px solid;
