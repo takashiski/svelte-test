@@ -13,7 +13,7 @@ export const Cucamber: Game = {
   name: "Cucamber",
   setup: (ctx: Ctx, setupData: any): IG => {
     const G = {
-      currentPhase: "main",
+      currentStage: "main",
       trickCount: 0,
       prevTrick: { winner: "0", biggest: null },
       trick: { winner: null, biggest: null },
@@ -157,7 +157,7 @@ function discard(G: IG, ctx: Ctx, index: number) {
       //ラウンド終了処理
       // finishRound(G, ctx);
       console.log(`next player is default`);
-      G.currentPhase = "roundResult";
+      G.currentStage = "roundResult";
       ctx.events.setActivePlayers({
         currentPlayer: "roundResult",
         others: "roundResult"
@@ -167,7 +167,7 @@ function discard(G: IG, ctx: Ctx, index: number) {
     else {
       //go next trick
       setTrickWinner(G, ctx);
-      G.currentPhase = "trickResult";
+      G.currentStage = "trickResult";
       ctx.events.setActivePlayers({
         currentPlayer: "trickResult",
         others: "trickResult"
@@ -196,7 +196,7 @@ function acceptTrickResult(G: IG, ctx: Ctx) {
   G.trick.winner = null;
   console.log(`next trick's first player is ${G.prevTrick.winner}`);
   ctx.events.endTurn({ next: G.prevTrick.winner });
-  G.currentPhase = "main";
+  G.currentStage = "main";
   ctx.events.setActivePlayers({
     currentPlayer: "main",
     others: "main"
@@ -207,11 +207,11 @@ function acceptRoundResult(G: IG, ctx: Ctx) {
   LOG("init round")
   //ラウンド初期化
   finishRound(G, ctx);
-  G.currentPhase = "main";
+  G.currentStage = "main";
   ctx.events.setActivePlayers({
     currentPlayer: "main",
     others: "main"
   });
   ctx.events.endTurn({ next: G.round.winner });
-  ctx.events.endTurn();
+  // ctx.events.endTurn();
 }

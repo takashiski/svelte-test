@@ -12,8 +12,8 @@
   export let playerId: string = "";
   export let matchId: string = "default";
   export let credentials: string = "";
-  export let serverUrl:string;
-  export let numOfPlayers:number;
+  export let serverUrl: string;
+  export let numOfPlayers: number;
   let cards: ICard[] = [];
   let selectedCard: ICard;
   let selectedIndex: number;
@@ -44,9 +44,12 @@
       console.error("receive null state");
       return;
     }
-    currentPlayerId = state.ctx.currentPlayer;
+    console.log(playerId);
+    currentPlayerId = state.G.currentStage=="main"?state.ctx.currentPlayer:"-1";
     layouts = state.G.players.map((v) => v.layout);
-    const playerHand = state.G.players[playerId].hand;
+    const player = state.G.players[playerId];
+    console.log(player);
+    const playerHand = player.hand;
     // const playerHand = state.G.players[state.ctx.currentPlayer].hand;
     cards = [];
     for (let i = 0; i < playerHand.length; i += 1) {
@@ -58,11 +61,15 @@
   }
   function selectCard(e: Event) {
     let index: number = e.target!.getAttribute("index");
-    selectedCard = cards[index];
-    selectedIndex = index;
-    console.log(selectedCard);
-    console.log(selectedIndex);
-    getModal("verify-modal").open();
+    if (selectedCard == cards[index]) {
+      discard();
+    } else {
+      selectedCard = cards[index];
+      selectedIndex = index;
+      console.log(selectedCard);
+      console.log(selectedIndex);
+    }
+    // getModal("verify-modal").open();
   }
   function discard() {
     console.log(client.playerID);
@@ -121,10 +128,10 @@
     {/each}
     <!-- <hr>
   <Player player={G.players[currentPlayerId]}/> -->
-    {#if G.currentPhase == "trickResult"}
+    {#if G.currentStage == "trickResult"}
       <button on:click={acceptTrickResult}>トリックの結果をみた</button>
     {/if}
-    {#if G.currentPhase == "roundResult"}
+    {#if G.currentStage == "roundResult"}
       <button on:click={acceptRountResult}>ラウンドの結果をみた</button>
     {/if}
     <h2>手札</h2>
@@ -135,7 +142,13 @@
       <tr>
         {#each cards as c, i (c)}
           <!-- {#each cards.sort((a, b) => (a.num < b.num ? -1 : 1)) as c, i (c)} -->
-          {#if myTurn && (G.trick.biggest == null || G.trick.biggest.num <= c.num)}
+          {#if myTurn && c == selectedCard}
+            <td class="card selected-card" 
+            on:click={selectCard}
+            index={i}
+            number={c.num}
+            value={c.num}>{c.num}</td>
+          {:else if myTurn && (G.trick.biggest == null || G.trick.biggest.num <= c.num)}
             <td
               class="card discardable-bigger"
               on:click={selectCard}
@@ -218,10 +231,17 @@
     height: 140px;
     width: 100px;
   }
-  .card:active {
-    background-color: #ccffff;
+  .card:hover {
+    /* background-color: #ccffff; */
     border: solid 3px #000000;
   }
+  .selected-card{
+    background-color:#99ffff;
+  }
+  /* .card:checked{
+    background-color: #ffccff;
+    border:solid 3px #000000;
+  } */
   .discardable-bigger {
     background-color: #ccffff;
   }

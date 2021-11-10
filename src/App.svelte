@@ -5,7 +5,7 @@
   import type { LobbyAPI } from "boardgame.io";
   import { identity, text } from "svelte/internal";
   let playerId: string = "";
-  let playerName: string = "";
+  let playerName: string = "あの";
   let matchId: string = "";
   let credentials: string = "";
   let tempMatchId: String = "default";
@@ -66,8 +66,9 @@
     console.log(playerCredentials);
     credentials = playerCredentials;
   }
-  async function seated(match: LobbyAPI.Match, playerId: string) {
+  async function seated(match: LobbyAPI.Match, id: string) {
     matchId=match.matchID;
+    playerId = id
     console.log(match);
     console.log(playerId);
     const { playerCredentials } = await lobbyClient.joinMatch(
