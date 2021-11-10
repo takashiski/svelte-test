@@ -67,8 +67,8 @@
     credentials = playerCredentials;
   }
   async function seated(match: LobbyAPI.Match, id: string) {
-    matchId=match.matchID;
-    playerId = id
+    matchId = match.matchID;
+    playerId = id;
     console.log(match);
     console.log(playerId);
     const { playerCredentials } = await lobbyClient.joinMatch(
@@ -85,57 +85,51 @@
 </script>
 
 <!-- <button on:click={listGames}>ゲーム一覧</button> -->
-<div>
-  プレイヤー名：<input type="text" bind:value={playerName} />
-  <button on:click={listMatches}>部屋一覧</button><br />
-  {#if matches != null}
-    {#each matches as match}
-      {match.gameName}<br />
-      部屋ID：<input type="text" value={match.matchID} /><br />
-      参加者一覧
-      {#each match.players as player}
-        {#if player.isConnected == true}
-          - {player.id} : {player.name}<br />
-        {:else}
-          {player.id} :
-          <button
-            on:click={() => {
-              seated(match, player.id.toString());
-            }}>ここに座る</button
-          > <br />
-        {/if}
-      {/each}
-    {/each}
-  {/if}
-</div>
 {#if matchId == ""}
-  プレイヤー人数：
-  <input type="number" bind:value={numOfPlayers} /><br />
-  <button on:click={createMatch}>部屋を作成する</button><br />
-  or <br />
-  <input type="text" bind:value={tempMatchId} />
-  <button on:click={setMatchId}>このIDの部屋に参加する</button><br />
+  <div>
+    プレイヤー名：<input type="text" bind:value={playerName} />
+    <button on:click={listMatches}>部屋一覧を取得する</button><br />
+    <div class="rooms">
+      {#if matches == null}
+        部屋一覧取得を押してください。
+      {:else if matches.length == 0}
+        今立っている部屋はないです。
+      {:else}
+        {#each matches as match}
+          {match.gameName}<br />
+          部屋ID：<input type="text" value={match.matchID} /><br />
+          参加者一覧
+          {#each match.players as player}
+            {#if player.isConnected == true}
+              - {player.id} : {player.name}<br />
+            {:else}
+              {player.id} :
+              <button
+                on:click={() => {
+                  seated(match, player.id.toString());
+                }}>ここに座る</button
+              > <br />
+            {/if}
+          {/each}
+        {/each}
+      {/if}
+    </div>
+    プレイヤー人数：
+    <input type="number" bind:value={numOfPlayers} /><br />
+    <button on:click={createMatch}>部屋を作成する</button><br />
+    or <br />
+    <input type="text" bind:value={tempMatchId} />
+    <button on:click={setMatchId}>このIDの部屋に参加する</button><br />
+  </div>
 {:else}
   {#if credentials == ""}
-    <p>部屋ID : {matchId}</p>
-    <!-- {#each { length: numOfPlayers } as _, i}
-      <label>
-        <input
-          type="radio"
-          bind:group={playerId}
-          name="pid"
-          value={i.toString()}
-        />
-        {i}
-      </label><br />
-    {/each} -->
-    <!-- <input type="number" bind:value={inputNumber}/> -->
-    <!-- <button on:click={setPlayerId}>id決定</button><br> -->
+    <p>部屋ID : {matchId} (これをいっしょにプレイしたい人に伝えてください)</p>
     <button on:click={join}>ゲームに入る</button>
   {/if}
   {#if credentials != ""}
     <CucamberClient
       {playerId}
+      {playerName}
       {matchId}
       {credentials}
       {numOfPlayers}
@@ -145,4 +139,10 @@
 {/if}
 <!-- <CucamberClient playerId="0"/> -->
 <!-- <CucamberClient playerId="1"/> -->
+
 <!-- <CucamberClient playerId="2"/> -->
+<style>
+  .rooms {
+    border: solid 1px;
+  }
+</style>

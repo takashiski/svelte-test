@@ -10,6 +10,7 @@
   import Card from "./Card.svelte";
 
   export let playerId: string = "";
+  export let playerName: string ="";
   export let matchId: string = "default";
   export let credentials: string = "";
   export let serverUrl: string;
@@ -102,7 +103,7 @@
 
   <!-- <h2>情報</h2> -->
   <!-- <hr /> -->
-  <h2>Player {playerId}</h2>
+  <h2>Player {playerId} : {playerName}</h2>
   {#if playerId == currentPlayerId}
     あなたの番です。
   {/if}
