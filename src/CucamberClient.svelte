@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Client } from "boardgame.io/client";
-  import { Local } from "boardgame.io/multiplayer";
+  import type {LobbyAPI} from "boardgame.io";
   import { SocketIO } from "boardgame.io/multiplayer";
   import { Cucamber } from "./Cucamber";
   import type { ICard, IState, IG } from "./types/types";
@@ -8,13 +8,14 @@
   import Player from "./Player.svelte";
   import Modal, { getModal } from "./Modal.svelte";
   import Card from "./Card.svelte";
+import type { MatchingData } from "./types/lobbyTypes";
 
-  export let playerId: string = "";
-  export let playerName: string ="";
-  export let matchId: string = "default";
-  export let credentials: string = "";
+  export let matchingData:MatchingData;
   export let serverUrl: string;
-  export let numOfPlayers: number;
+  let playerName: string =matchingData.match.players[matchingData.joinedMatch.playerID].name;
+  console.log(playerName)
+  const matchId: string = matchingData.match.matchID;
+  const playerId:string = matchingData.joinedMatch.playerID;
   let cards: ICard[] = [];
   let selectedCard: ICard;
   let selectedIndex: number;
@@ -22,17 +23,14 @@
   let layouts: (ICard | null)[] = [];
   let G: IG = null;
 
-  console.log(playerId);
-  console.log(matchId);
-  console.log(credentials);
 
   const client = Client({
     game: Cucamber,
     multiplayer: SocketIO({ server: serverUrl }),
-    numPlayers: numOfPlayers,
+    numPlayers: matchingData.match.players.length,
     matchID: matchId,
-    playerID: playerId,
-    credentials: credentials,
+    playerID: matchingData.joinedMatch.playerID,
+    credentials: matchingData.joinedMatch.playerCredentials,
     debug: true,
   });
   client.start();
@@ -45,7 +43,6 @@
       console.error("receive null state");
       return;
     }
-    console.log(playerId);
     currentPlayerId = state.G.currentStage=="main"?state.ctx.currentPlayer:"-1";
     layouts = state.G.players.map((v) => v.layout);
     const player = state.G.players[playerId];
@@ -92,17 +89,8 @@
 </script>
 
 <main>
-  <!-- {#if G!=null} -->
-  <!-- <h1>Cucamber</h1> -->
-  <!-- <h1>Hello {name}!</h1>
-  <p>
-    Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p> -->
   <!-- <Rules/> -->
 
-  <!-- <h2>情報</h2> -->
-  <!-- <hr /> -->
   <h2>Player {playerId} : {playerName}</h2>
   {#if playerId == currentPlayerId}
     あなたの番です。
@@ -124,7 +112,7 @@
     <hr />
     {#each G.players as player}
       <!-- {#if player.id.toString() != currentPlayerId} -->
-      <Player {player} {currentPlayerId} />
+      <Player {player} {currentPlayerId} match={matchingData.match}/>
       <!-- {/if} -->
     {/each}
     <!-- <hr>
