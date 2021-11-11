@@ -2,15 +2,15 @@
   import CucamberClient from "./CucamberClient.svelte";
   import Match from "./Match.svelte";
   import { LobbyClient } from "boardgame.io/client";
-  import type {MatchingData} from "./types/lobbyTypes";
+  import type { MatchingData } from "./types/lobbyTypes";
   import Player from "./Player.svelte";
   import type { LobbyAPI } from "boardgame.io";
   import { identity, text } from "svelte/internal";
 
-  let matchingData:MatchingData={
-    joinedMatch:null,
-    match:null,
-    serverUrl:null
+  let matchingData: MatchingData = {
+    joinedMatch: null,
+    match: null,
+    serverUrl: null,
   };
   let playerName: string = "ななしのひよこ";
   let gameLists: string[];
@@ -50,13 +50,11 @@
 </script>
 
 {#if matchingData.joinedMatch != null}
-  <CucamberClient
-    {matchingData}
-    {serverUrl}
-  />
+  <CucamberClient {matchingData} {serverUrl} />
 {/if}
 <div>
-  プレイヤー名：<input type="text" bind:value={playerName} />
+  プレイヤー名：<input type="text" bind:value={playerName} /><br />
+  <hr />
   <button on:click={listMatches}>部屋一覧を取得する</button><br />
   <div class="rooms">
     {#if matches == null}
@@ -65,22 +63,27 @@
       今立っている部屋はないです。
     {:else}
       {#each matches as match}
-        <Match
-          bind:matchingData={matchingData}
-          {match}
-          {playerName}
-          {lobbyClient}
-        />
+        <Match bind:matchingData {match} {playerName} {lobbyClient} />
       {/each}
     {/if}
   </div>
-  プレイヤー人数：
-  <input type="number" bind:value={numOfPlayers} /><br />
-  <button on:click={async()=>{createMatch();listMatches();}}>部屋を作成する</button><br />
+  <div class="new-rooms">
+    プレイヤー人数：
+    <input type="number" bind:value={numOfPlayers} /><br />
+    <button
+      on:click={async () => {
+        await createMatch();
+        await listMatches();
+      }}>部屋を作成する</button
+    ><br />
+  </div>
 </div>
 
 <style>
   .rooms {
+    border: solid 1px;
+  }
+  .new-rooms {
     border: solid 1px;
   }
 </style>
