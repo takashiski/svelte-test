@@ -2,7 +2,7 @@
   import type { LobbyAPI } from "boardgame.io";
   import type { IPlayer } from "./types/types";
 
-  export let match: LobbyAPI.Match;
+  export let playerName:String;
   export let player: IPlayer;
   export let currentPlayerId: string;
 </script>
@@ -14,7 +14,7 @@
 >
   <p>
     {player.id}
-    {match.players[player.id].name}
+    {playerName}
   </p>
   <p>
     🦗 : {player.cucamber}

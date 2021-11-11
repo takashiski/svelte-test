@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Client } from "boardgame.io/client";
-  import type {LobbyAPI} from "boardgame.io";
+  import type { LobbyAPI } from "boardgame.io";
   import { SocketIO } from "boardgame.io/multiplayer";
   import { Cucamber } from "./Cucamber";
   import type { ICard, IState, IG } from "./types/types";
@@ -8,22 +8,20 @@
   import Player from "./Player.svelte";
   import Modal, { getModal } from "./Modal.svelte";
   import Card from "./Card.svelte";
-import type { MatchingData } from "./types/lobbyTypes";
+  import type { MatchingData } from "./types/lobbyTypes";
 
-  export let matchingData:MatchingData;
+  export let matchingData: MatchingData;
   export let serverUrl: string;
-  let playerName: string =matchingData.match.players[matchingData.joinedMatch.playerID].name;
-  console.log(playerName)
   const matchId: string = matchingData.match.matchID;
-  const playerId:string = matchingData.joinedMatch.playerID;
+  const playerId: string = matchingData.joinedMatch.playerID;
   let cards: ICard[] = [];
   let selectedCard: ICard;
   let selectedIndex: number;
   let currentPlayerId = "";
   let layouts: (ICard | null)[] = [];
   let G: IG = null;
-  const TIMEOUT=15;
-
+  let TIMEOUT = 15;
+  let playerName = "";
 
   const client = Client({
     game: Cucamber,
@@ -36,6 +34,7 @@ import type { MatchingData } from "./types/lobbyTypes";
   });
   client.start();
   client.subscribe((state) => update(state));
+
   // client.sendChatMessage("test");
 
   function update(state: IState) {
@@ -44,7 +43,8 @@ import type { MatchingData } from "./types/lobbyTypes";
       console.error("receive null state");
       return;
     }
-    currentPlayerId = state.G.currentStage=="main"?state.ctx.currentPlayer:"-1";
+    currentPlayerId =
+      state.G.currentStage == "main" ? state.ctx.currentPlayer : "-1";
     layouts = state.G.players.map((v) => v.layout);
     const player = state.G.players[playerId];
     console.log(player);
@@ -57,6 +57,12 @@ import type { MatchingData } from "./types/lobbyTypes";
       });
     }
     G = state.G;
+    if (playerId == currentPlayerId) {
+      setTimeout(() => {
+        client.moves.discard(0);
+      }, TIMEOUT * 1000);
+    }
+    if ((playerName = "")) playerName = client.matchData[playerId].name;
   }
   function selectCard(e: Event) {
     let index: number = e.target!.getAttribute("index");
@@ -91,16 +97,13 @@ import type { MatchingData } from "./types/lobbyTypes";
 
 <main>
   <!-- <Rules/> -->
-  <h1>{matchingData.match.gameName} : {matchingData.match.matchID}</h1>
+  <h2>{matchingData.match.gameName} : {matchingData.match.matchID}</h2>
 
-  <h2>Player {playerId} : {playerName}</h2>
+  <h2>
+    Player {playerId} : {playerName}
+  </h2>
   {#if playerId == currentPlayerId}
     あなたの番です。
-    <script>
-      setTimeout(() => {
-        client.moves.discard(0);
-      }, TIMEOUT*1000);
-    </script>
   {/if}
   {#if G != null}
     <table>
@@ -119,7 +122,11 @@ import type { MatchingData } from "./types/lobbyTypes";
     <hr />
     {#each G.players as player}
       <!-- {#if player.id.toString() != currentPlayerId} -->
-      <Player {player} {currentPlayerId} match={matchingData.match}/>
+      <Player
+        {player}
+        {currentPlayerId}
+        playerName={client.matchData[player.id].name}
+      />
       <!-- {/if} -->
     {/each}
     <!-- <hr>
@@ -139,11 +146,13 @@ import type { MatchingData } from "./types/lobbyTypes";
         {#each cards as c, i (c)}
           <!-- {#each cards.sort((a, b) => (a.num < b.num ? -1 : 1)) as c, i (c)} -->
           {#if myTurn && c == selectedCard}
-            <td class="card selected-card" 
-            on:click={selectCard}
-            index={i}
-            number={c.num}
-            value={c.num}>{c.num}</td>
+            <td
+              class="card selected-card"
+              on:click={selectCard}
+              index={i}
+              number={c.num}
+              value={c.num}>{c.num}</td
+            >
           {:else if myTurn && (G.trick.biggest == null || G.trick.biggest.num <= c.num)}
             <td
               class="card discardable-bigger"
@@ -231,8 +240,8 @@ import type { MatchingData } from "./types/lobbyTypes";
     /* background-color: #ccffff; */
     border: solid 3px #000000;
   }
-  .selected-card{
-    background-color:#99ffff;
+  .selected-card {
+    background-color: #99ffff;
   }
   /* .card:checked{
     background-color: #ffccff;
