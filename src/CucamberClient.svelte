@@ -57,11 +57,11 @@
       });
     }
     G = state.G;
-    if (playerId == currentPlayerId) {
-      setTimeout(() => {
-        client.moves.discard(0);
-      }, TIMEOUT * 1000);
-    }
+    // if (playerId == currentPlayerId) {
+    //   setTimeout(() => {
+    //     client.moves.discard(0);
+    //   }, TIMEOUT * 1000);
+    // }
     if ((playerName = "")) playerName = client.matchData[playerId].name;
   }
   function selectCard(e: Event) {
@@ -96,7 +96,7 @@
 </script>
 
 <main>
-  <!-- <Rules/> -->
+  <Rules/>
   <h2>{matchingData.match.gameName} : {matchingData.match.matchID}</h2>
 
   <h2>
@@ -129,14 +129,23 @@
       />
       <!-- {/if} -->
     {/each}
-    <!-- <hr>
-  <Player player={G.players[currentPlayerId]}/> -->
+    <hr />
     {#if G.currentStage == "trickResult"}
-      <button on:click={acceptTrickResult}>トリックの結果をみた</button>
+      <h3>
+        第 {G.trickCount} トリック勝者：{G.trick.winner}:{client.matchData[
+          G.trick.winner
+        ].name}
+      </h3>
+      <br />
+      <button on:click={acceptTrickResult}>次のトリックへ進む</button><br />
     {/if}
     {#if G.currentStage == "roundResult"}
-      <button on:click={acceptRountResult}>ラウンドの結果をみた</button>
+      <h3>第 {G.round.count} ラウンド</h3>
+      <br />
+      敗者 {G.trick.winner}:{client.matchData[G.trick.winner].name}<br />
+      <button on:click={acceptRountResult}>次のラウンドへ進む</button>
     {/if}
+    <hr />
     <h2>手札</h2>
     <!-- <p>
     {currentPlayerId}

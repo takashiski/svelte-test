@@ -98,8 +98,9 @@ function deal(G: IG, num: number) {
 
 function calculateRoundResult(G: IG, ctx: Ctx) {
   LOG("calculate round result");
-  let loserId = G.players.reduce((p, c) => p.layout.num < c.layout.num ? c : p).id;
+  let loserId = G.players.reduce((p, c) => p.layout.num <= c.layout.num ? c : p).id;
   console.log(`loser is ${loserId}`);
+  G.round.winner = loserId.toString();
 
   let cucamber = G.players.map(v => v.layout.cucamber).reduce((p, c) => c == 0 ? p * 2 : p + c);
   G.players[loserId].cucamber += cucamber;
@@ -126,7 +127,7 @@ function finishRound(G: IG, ctx: Ctx) {
 
 function setTrickWinner(G: IG, ctx: Ctx) {
   const player = G.players[ctx.currentPlayer];
-  if (G.trick.biggest == null || G.trick.biggest.num < player.layout.num) {
+  if (G.trick.biggest == null || G.trick.biggest.num <= player.layout.num) {
     G.trick.biggest = player.layout;
     G.trick.winner = ctx.currentPlayer;
   }
@@ -153,9 +154,8 @@ function discard(G: IG, ctx: Ctx, index: number) {
     G.trickCount += 1;
     //check round finish
     if (G.trickCount == 7) {
-      calculateRoundResult(G, ctx);
       //ラウンド終了処理
-      // finishRound(G, ctx);
+      calculateRoundResult(G, ctx);
       console.log(`next player is default`);
       G.currentStage = "roundResult";
       ctx.events.setActivePlayers({
