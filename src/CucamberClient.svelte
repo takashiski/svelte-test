@@ -22,6 +22,7 @@ import type { MatchingData } from "./types/lobbyTypes";
   let currentPlayerId = "";
   let layouts: (ICard | null)[] = [];
   let G: IG = null;
+  const TIMEOUT=15;
 
 
   const client = Client({
@@ -90,10 +91,16 @@ import type { MatchingData } from "./types/lobbyTypes";
 
 <main>
   <!-- <Rules/> -->
+  <h1>{matchingData.match.gameName} : {matchingData.match.matchID}</h1>
 
   <h2>Player {playerId} : {playerName}</h2>
   {#if playerId == currentPlayerId}
     あなたの番です。
+    <script>
+      setTimeout(() => {
+        client.moves.discard(0);
+      }, TIMEOUT*1000);
+    </script>
   {/if}
   {#if G != null}
     <table>
