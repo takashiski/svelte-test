@@ -3,9 +3,8 @@
   import Match from "./Match.svelte";
   import { LobbyClient } from "boardgame.io/client";
   import type { MatchingData } from "./types/lobbyTypes";
-  import Player from "./Player.svelte";
   import type { LobbyAPI } from "boardgame.io";
-  import { identity, text } from "svelte/internal";
+  import { Cucamber } from "./Cucamber";
 
   let matchingData: MatchingData = {
     joinedMatch: null,
@@ -15,7 +14,7 @@
   let playerName: string = "ななしのひよこ";
   let gameLists: string[];
   let matches: LobbyAPI.Match[];
-  let numOfPlayers: number = 2;
+  let numOfPlayers: number = 3;
 
   const { protocol, hostname, port } = window.location;
   const serverUrl =
@@ -42,9 +41,20 @@
   }
   async function createMatch() {
     const { matchID } = await lobbyClient.createMatch("Cucamber", {
-      numPlayers: clamp(numOfPlayers, 3, 8),
+      numPlayers: clamp(numOfPlayers, Cucamber.minPlayers, Cucamber.maxPlayers),
     });
     console.log(`create new room ${matchID}`);
+  }
+  async function leaveMatch(){
+    const result = await lobbyClient.leaveMatch(matchingData.match.gameName,matchingData.match.matchID,{
+      playerID:matchingData.joinedMatch.playerID,
+      credentials:matchingData.joinedMatch.playerCredentials
+    });
+    console.log(result);
+    matchingData.joinedMatch=null;
+    matchingData.match=null;
+    console.log("leave match");
+    await listMatches();
   }
   function clamp(num: number, min: number, max: number) {
     if (min <= num && num <= max) {
@@ -58,8 +68,8 @@
   //-----------------------------------------------------------
 </script>
 
-{#if matchingData.joinedMatch != null}
-  <CucamberClient {matchingData} {serverUrl} />
+{#if matchingData.match != null}
+  <CucamberClient bind:matchingData={matchingData} {serverUrl} onClose={leaveMatch}/>
 {/if}
 <div>
   プレイヤー名：<input type="text" bind:value={playerName} /><br />
@@ -76,9 +86,17 @@
       {/each}
     {/if}
   </div>
+  {#if matches==null}
+  
+  {:else if matches.length==0}
   <div class="new-rooms">
-    プレイヤー人数：
-    <input type="number" bind:value={numOfPlayers} /><br />
+    プレイヤー人数：{numOfPlayers}
+    <input
+      type="range"
+      min={Cucamber.minPlayers}
+      max={Cucamber.maxPlayers}
+      bind:value={numOfPlayers}
+    /><br />
     <button
       on:click={async () => {
         await createMatch();
@@ -86,6 +104,7 @@
       }}>部屋を作成する</button
     ><br />
   </div>
+  {/if}
 </div>
 
 <style>

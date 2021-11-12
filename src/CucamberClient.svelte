@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client } from "boardgame.io/client";
+  import { Client, LobbyClient } from "boardgame.io/client";
   import type { LobbyAPI } from "boardgame.io";
   import { SocketIO } from "boardgame.io/multiplayer";
   import { Cucamber } from "./Cucamber";
@@ -12,6 +12,7 @@
 
   export let matchingData: MatchingData;
   export let serverUrl: string;
+  export let onClose=async()=>{};
   const matchId: string = matchingData.match.matchID;
   const playerId: string = matchingData.joinedMatch.playerID;
   let cards: ICard[] = [];
@@ -34,6 +35,8 @@
   });
   client.start();
   client.subscribe((state) => update(state));
+
+  const lobby = new LobbyClient({server:serverUrl});
 
   // client.sendChatMessage("test");
 
@@ -93,11 +96,24 @@
     client.moves.acceptTrickResult();
   }
   $: myTurn = playerId == currentPlayerId;
+
+  async function leaveMatch(){
+    lobby.leaveMatch(matchingData.match.gameName,matchingData.match.matchID,{
+      playerID:playerId,credentials:matchingData.joinedMatch.playerCredentials
+    });
+    matchingData.match=null;
+    matchingData.joinedMatch=null;
+  }
 </script>
 
 <main>
   <Rules/>
-  <h2>{matchingData.match.gameName} : {matchingData.match.matchID}</h2>
+  {#if matchingData.match}
+  <h2>{matchingData.match.gameName} : {matchingData.match.matchID} 
+    <button on:click={leaveMatch}>退席する</button>
+    <button on:click={onClose}>退席する２</button>
+  </h2>
+  {/if}
 
   <h2>
     Player {playerId} : {playerName}
