@@ -14,7 +14,7 @@ import type { MatchingData } from "./types/lobbyTypes";
       match.gameName,
       match.matchID,
       {
-        playerID: id,
+        // playerID: id,
         playerName: playerName,
       }
     );
