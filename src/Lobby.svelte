@@ -42,9 +42,18 @@
   }
   async function createMatch() {
     const { matchID } = await lobbyClient.createMatch("Cucamber", {
-      numPlayers: numOfPlayers<9?numOfPlayers:8,
+      numPlayers: clamp(numOfPlayers, 3, 8),
     });
     console.log(`create new room ${matchID}`);
+  }
+  function clamp(num: number, min: number, max: number) {
+    if (min <= num && num <= max) {
+      return num;
+    } else if (num < min) {
+      return min;
+    } else {
+      return max;
+    }
   }
   //-----------------------------------------------------------
 </script>
