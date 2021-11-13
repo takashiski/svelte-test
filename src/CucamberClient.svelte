@@ -9,10 +9,11 @@
   import Modal, { getModal } from "./Modal.svelte";
   import Card from "./Card.svelte";
   import type { MatchingData } from "./types/lobbyTypes";
+  import Match from "./Match.svelte";
 
   export let matchingData: MatchingData;
   export let serverUrl: string;
-  export let onClose=async()=>{};
+  export let onClose = async () => {};
   const matchId: string = matchingData.match.matchID;
   const playerId: string = matchingData.joinedMatch.playerID;
   let cards: ICard[] = [];
@@ -36,12 +37,7 @@
   client.start();
   client.subscribe((state) => update(state));
 
-  const lobby = new LobbyClient({server:serverUrl});
-
-  // client.sendChatMessage("test");
-
   function update(state: IState) {
-    // console.log(state);
     if (state == null) {
       console.error("receive null state");
       return;
@@ -52,7 +48,6 @@
     const player = state.G.players[playerId];
     console.log(player);
     const playerHand = player.hand;
-    // const playerHand = state.G.players[state.ctx.currentPlayer].hand;
     cards = [];
     for (let i = 0; i < playerHand.length; i += 1) {
       cards.push({
@@ -60,12 +55,8 @@
       });
     }
     G = state.G;
-    // if (playerId == currentPlayerId) {
-    //   setTimeout(() => {
-    //     client.moves.discard(0);
-    //   }, TIMEOUT * 1000);
-    // }
     if ((playerName = "")) playerName = client.matchData[playerId].name;
+    console.log(client.matchData);
   }
   function selectCard(e: Event) {
     let index: number = e.target!.getAttribute("index");
@@ -77,18 +68,11 @@
       console.log(selectedCard);
       console.log(selectedIndex);
     }
-    // getModal("verify-modal").open();
   }
   function discard() {
     console.log(client.playerID);
     client.moves.discard(selectedIndex);
   }
-  // function discard(e: Event) {
-  //   let index: number = e.target!.getAttribute("index");
-  //   console.log(index);
-  //   console.log(client);
-  //   client.moves.discard(index);
-  // }
   function acceptRountResult(e: Event) {
     client.moves.acceptRoundResult();
   }
@@ -96,111 +80,126 @@
     client.moves.acceptTrickResult();
   }
   $: myTurn = playerId == currentPlayerId;
-
-  async function leaveMatch(){
-    lobby.leaveMatch(matchingData.match.gameName,matchingData.match.matchID,{
-      playerID:playerId,credentials:matchingData.joinedMatch.playerCredentials
-    });
-    matchingData.match=null;
-    matchingData.joinedMatch=null;
-  }
 </script>
 
 <main>
-  <Rules/>
-  {#if matchingData.match}
-  <h2>{matchingData.match.gameName} : {matchingData.match.matchID} 
-    <button on:click={leaveMatch}>退席する</button>
-    <button on:click={onClose}>退席する２</button>
-  </h2>
-  {/if}
-
-  <h2>
-    Player {playerId} : {playerName}
-  </h2>
-  {#if playerId == currentPlayerId}
-    あなたの番です。
-  {/if}
-  {#if G != null}
-    <table>
-      <tr>
-        <td>ラウンド</td>
-        <td>トリック</td>
-      </tr>
-      <tr>
-        <td>{G.round.count}</td>
-        <td>{G.trickCount}</td>
-      </tr>
-    </table>
-  {/if}
-
-  {#if G != null}
-    <hr />
-    {#each G.players as player}
-      <!-- {#if player.id.toString() != currentPlayerId} -->
-      <Player
-        {player}
-        {currentPlayerId}
-        playerName={client.matchData[player.id].name}
-      />
-      <!-- {/if} -->
-    {/each}
-    <hr />
-    {#if G.currentStage == "trickResult"}
-      <h3>
-        第 {G.trickCount} トリック勝者：{G.trick.winner}:{client.matchData[
-          G.trick.winner
-        ].name}
-      </h3>
-      <br />
-      <button on:click={acceptTrickResult}>次のトリックへ進む</button><br />
+  <Rules />
+  {#if client.matchData==null}
+  null
+  <br/>
+  {:else if client.matchData.filter((v) => v.name == null || v.name == undefined).length > 0}
+    参加者を待っています
+    <ul>
+      {#each client.matchData as p}
+      <li>{p.id}:{p.name} {p.isConnected}</li>
+      {/each}
+    </ul>
+  {:else}
+    {#if matchingData.match}
+      <h2>
+        {matchingData.match.gameName} : {matchingData.match.matchID}
+        <button on:click={onClose}>退席する</button>
+      </h2>
     {/if}
-    {#if G.currentStage == "roundResult"}
-      <h3>第 {G.round.count} ラウンド</h3>
-      <br />
-      敗者 {G.trick.winner}:{client.matchData[G.trick.winner].name}<br />
-      <button on:click={acceptRountResult}>次のラウンドへ進む</button>
+
+    <h2>
+      Player {playerId} : {playerName}
+    </h2>
+    {#if playerId == currentPlayerId}
+      あなたの番です。
     {/if}
-    <hr />
-    <h2>手札</h2>
-    <!-- <p>
+    {#if G != null}
+      <table>
+        <tr>
+          <td>ラウンド</td>
+          <td>トリック</td>
+        </tr>
+        <tr>
+          <td>{G.round.count}</td>
+          <td>{G.trickCount}</td>
+        </tr>
+      </table>
+    {/if}
+
+    {#if G != null}
+      <hr />
+      {#each G.players as player}
+        <!-- {#if player.id.toString() != currentPlayerId} -->
+        <Player
+          {player}
+          {currentPlayerId}
+          playerName={client.matchData[player.id].name}
+        />
+        <!-- {/if} -->
+      {/each}
+      <hr />
+      {#if G.currentStage == "main"}
+        {#if G.trickCount < 6}
+        <ul>
+          <li>他の人のカードの数字と同じ数字か、大きい数字のカードを出そう。</li>
+          <li>だせないか出したくないときは、手札の中で一番小さい数字でもよいぞ。</li>
+          <li>最後の1枚が他の人のカードの数字より小さくなるようにしよう</li>
+        </ul>
+        {/if}
+      {/if}
+      {#if G.currentStage == "trickResult"}
+        <h3>
+          第 {G.trickCount} トリック勝者：{G.trick.winner}:{client.matchData[
+            G.trick.winner
+          ].name}
+        </h3>
+        <br />
+        <button on:click={acceptTrickResult}>次のトリックへ進む</button><br />
+      {/if}
+      {#if G.currentStage == "roundResult"}
+        <h3>第 {G.round.count} ラウンド</h3>
+        <br />
+        敗者 {G.trick.winner}:{client.matchData[G.trick.winner].name}<br />
+        <button on:click={acceptRountResult}>次のラウンドへ進む</button>
+      {/if}
+      <hr />
+      <h2>手札</h2>
+      <!-- <p>
     {currentPlayerId}
   </p> -->
-    <table>
-      <tr>
-        {#each cards as c, i (c)}
-          <!-- {#each cards.sort((a, b) => (a.num < b.num ? -1 : 1)) as c, i (c)} -->
-          {#if myTurn && c == selectedCard}
-            <td
-              class="card selected-card"
-              on:click={selectCard}
-              index={i}
-              number={c.num}
-              value={c.num}>{c.num}</td
-            >
-          {:else if myTurn && (G.trick.biggest == null || G.trick.biggest.num <= c.num)}
-            <td
-              class="card discardable-bigger"
-              on:click={selectCard}
-              index={i}
-              number={c.num}
-              value={c.num}>{c.num}</td
-            >
-          {:else if myTurn && c.num === cards.reduce( (p, c) => (p.num > c.num ? c : p) ).num}
-            <td
-              class="card discardable-min"
-              on:click={selectCard}
-              index={i}
-              number={c.num}
-              value={c.num}>{c.num}</td
-            >
-          {:else}
-            <td class="card" index={i} number={c.num} value={c.num}>{c.num}</td>
-          {/if}
-          <!-- <Card bind:nu={c.num} bind:clicked={c.clicked}/> -->
-        {/each}
-      </tr>
-    </table>
+      <table>
+        <tr>
+          {#each cards as c, i (c)}
+            <!-- {#each cards.sort((a, b) => (a.num < b.num ? -1 : 1)) as c, i (c)} -->
+            {#if myTurn && c == selectedCard}
+              <td
+                class="card selected-card"
+                on:click={selectCard}
+                index={i}
+                number={c.num}
+                value={c.num}>{c.num}</td
+              >
+            {:else if myTurn && (G.trick.biggest == null || G.trick.biggest.num <= c.num)}
+              <td
+                class="card discardable-bigger"
+                on:click={selectCard}
+                index={i}
+                number={c.num}
+                value={c.num}>{c.num}</td
+              >
+            {:else if myTurn && c.num === cards.reduce( (p, c) => (p.num > c.num ? c : p) ).num}
+              <td
+                class="card discardable-min"
+                on:click={selectCard}
+                index={i}
+                number={c.num}
+                value={c.num}>{c.num}</td
+              >
+            {:else}
+              <td class="card" index={i} number={c.num} value={c.num}
+                >{c.num}</td
+              >
+            {/if}
+            <!-- <Card bind:nu={c.num} bind:clicked={c.clicked}/> -->
+          {/each}
+        </tr>
+      </table>
+    {/if}
   {/if}
 </main>
 
