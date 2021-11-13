@@ -24,6 +24,7 @@
   let G: IG = null;
   let TIMEOUT = 15;
   let playerName = "";
+  let matchData = [];
 
   const client = Client({
     game: Cucamber,
@@ -57,6 +58,7 @@
     G = state.G;
     if ((playerName = "")) playerName = client.matchData[playerId].name;
     console.log(client.matchData);
+    matchData = client.matchData;
   }
   function selectCard(e: Event) {
     let index: number = e.target!.getAttribute("index");
@@ -84,24 +86,24 @@
 
 <main>
   <Rules />
-  {#if client.matchData==null}
-  null
-  <br/>
-  {:else if client.matchData.filter((v) => v.name == null || v.name == undefined).length > 0}
+  {#if matchingData.match}
+    <h2>
+      {matchingData.match.gameName} : {matchingData.match.matchID}
+      <button on:click={onClose}>退席する</button>
+    </h2>
+  {/if}
+  {#if !matchData}
+    {client.matchData}
+    {console.log(client)}
+    <br />
+  {:else if matchData.filter((v) => v.name == null || v.name == undefined).length > 0}
     参加者を待っています
     <ul>
-      {#each client.matchData as p}
-      <li>{p.id}:{p.name} {p.isConnected}</li>
+      {#each matchData as p}
+        <li>{p.id}:{p.name} {p.isConnected}</li>
       {/each}
     </ul>
   {:else}
-    {#if matchingData.match}
-      <h2>
-        {matchingData.match.gameName} : {matchingData.match.matchID}
-        <button on:click={onClose}>退席する</button>
-      </h2>
-    {/if}
-
     <h2>
       Player {playerId} : {playerName}
     </h2>
@@ -135,11 +137,15 @@
       <hr />
       {#if G.currentStage == "main"}
         {#if G.trickCount < 6}
-        <ul>
-          <li>他の人のカードの数字と同じ数字か、大きい数字のカードを出そう。</li>
-          <li>だせないか出したくないときは、手札の中で一番小さい数字でもよいぞ。</li>
-          <li>最後の1枚が他の人のカードの数字より小さくなるようにしよう</li>
-        </ul>
+          <ul>
+            <li>
+              他の人のカードの数字と同じ数字か、大きい数字のカードを出そう。
+            </li>
+            <li>
+              だせないか出したくないときは、手札の中で一番小さい数字でもよいぞ。
+            </li>
+            <li>最後の1枚が他の人のカードの数字より小さくなるようにしよう</li>
+          </ul>
         {/if}
       {/if}
       {#if G.currentStage == "trickResult"}

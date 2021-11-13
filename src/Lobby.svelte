@@ -80,6 +80,7 @@
       }
     );
     matchingData.match = match;
+    console.log(matchingData);
   }
   //-----------------------------------------------------------
 </script>
