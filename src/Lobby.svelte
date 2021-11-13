@@ -45,14 +45,18 @@
     });
     console.log(`create new room ${matchID}`);
   }
-  async function leaveMatch(){
-    const result = await lobbyClient.leaveMatch(matchingData.match.gameName,matchingData.match.matchID,{
-      playerID:matchingData.joinedMatch.playerID,
-      credentials:matchingData.joinedMatch.playerCredentials
-    });
+  async function leaveMatch() {
+    const result = await lobbyClient.leaveMatch(
+      matchingData.match.gameName,
+      matchingData.match.matchID,
+      {
+        playerID: matchingData.joinedMatch.playerID,
+        credentials: matchingData.joinedMatch.playerCredentials,
+      }
+    );
     console.log(result);
-    matchingData.joinedMatch=null;
-    matchingData.match=null;
+    matchingData.joinedMatch = null;
+    matchingData.match = null;
     console.log("leave match");
     await listMatches();
   }
@@ -65,11 +69,23 @@
       return max;
     }
   }
+
+  async function joinMatch(match) {
+    matchingData.joinedMatch = await lobbyClient.joinMatch(
+      match.gameName,
+      match.matchID,
+      {
+        // playerID: id,
+        playerName: playerName,
+      }
+    );
+    matchingData.match = match;
+  }
   //-----------------------------------------------------------
 </script>
 
 {#if matchingData.match != null}
-  <CucamberClient bind:matchingData={matchingData} {serverUrl} onClose={leaveMatch}/>
+  <CucamberClient bind:matchingData {serverUrl} onClose={leaveMatch} />
 {/if}
 <div>
   プレイヤー名：<input type="text" bind:value={playerName} /><br />
@@ -83,27 +99,32 @@
     {:else}
       {#each matches as match}
         <Match bind:matchingData {match} {playerName} {lobbyClient} />
+        {#if matchingData.match ==null}
+        <button on:click={()=>joinMatch(match)}>この部屋に参加する</button>
+        {/if}
       {/each}
     {/if}
   </div>
-  {#if matches==null}
-  
-  {:else if matches.length==0}
-  <div class="new-rooms">
-    プレイヤー人数：{numOfPlayers}
-    <input
-      type="range"
-      min={Cucamber.minPlayers}
-      max={Cucamber.maxPlayers}
-      bind:value={numOfPlayers}
-    /><br />
-    <button
-      on:click={async () => {
-        await createMatch();
-        await listMatches();
-      }}>部屋を作成する</button
-    ><br />
-  </div>
+  {#if matches == null}
+  <br/>
+  {:else if matches.length == 0}
+    <div class="new-rooms">
+      プレイヤー人数：{numOfPlayers}
+      <input
+        type="range"
+        min={Cucamber.minPlayers}
+        max={Cucamber.maxPlayers}
+        bind:value={numOfPlayers}
+      /><br />
+      <button
+        on:click={async () => {
+          await createMatch();
+          await listMatches();
+          await joinMatch(matches[0]);
+          await listMatches();
+        }}>部屋を作成する</button
+      ><br />
+    </div>
   {/if}
 </div>
 
