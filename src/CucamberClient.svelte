@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Client, LobbyClient } from "boardgame.io/client";
-  import type { LobbyAPI } from "boardgame.io";
+  import type { FilteredMetadata, LobbyAPI } from "boardgame.io";
   import { SocketIO } from "boardgame.io/multiplayer";
   import { Cucamber } from "./Cucamber";
   import type { ICard, IState, IG } from "./types/types";
@@ -24,7 +24,7 @@
   let G: IG = null;
   let TIMEOUT = 15;
   let playerName = "";
-  let matchData = [];
+  let matchData:FilteredMetadata = [];
 
   const client = Client({
     game: Cucamber,
