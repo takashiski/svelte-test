@@ -95,7 +95,7 @@ import { writable } from "svelte/store";
 
 {#if matchingData.match != null}
   <CucamberClient bind:matchingData {serverUrl} onClose={leaveMatch} />
-{/if}
+{:else}
 <div>
   プレイヤー名：<input type="text" bind:value={$playerName} /><br />
   <hr />
@@ -136,6 +136,7 @@ import { writable } from "svelte/store";
     </div>
   {/if}
 </div>
+{/if}
 
 <style>
   .rooms {
