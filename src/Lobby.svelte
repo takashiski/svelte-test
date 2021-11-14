@@ -45,6 +45,19 @@
     });
     console.log(`create new room ${matchID}`);
   }
+ 
+  async function joinMatch(match) {
+    matchingData.joinedMatch = await lobbyClient.joinMatch(
+      match.gameName,
+      match.matchID,
+      {
+        // playerID: id,
+        playerName: playerName,
+      }
+    );
+    matchingData.match = match;
+    console.log(matchingData);
+  } 
   async function leaveMatch() {
     const result = await lobbyClient.leaveMatch(
       matchingData.match.gameName,
@@ -70,18 +83,6 @@
     }
   }
 
-  async function joinMatch(match) {
-    matchingData.joinedMatch = await lobbyClient.joinMatch(
-      match.gameName,
-      match.matchID,
-      {
-        // playerID: id,
-        playerName: playerName,
-      }
-    );
-    matchingData.match = match;
-    console.log(matchingData);
-  }
   //-----------------------------------------------------------
 </script>
 
