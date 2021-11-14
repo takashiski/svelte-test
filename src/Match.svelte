@@ -11,17 +11,6 @@ import type { MatchingData } from "./types/lobbyTypes";
   export let match:LobbyAPI.Match;
   export let playerName:string;
 
-  // async function seated() {
-  //   matchingData.joinedMatch = await lobbyClient.joinMatch(
-  //     match.gameName,
-  //     match.matchID,
-  //     {
-  //       // playerID: id,
-  //       playerName: playerName,
-  //     }
-  //   );
-  //   matchingData.match = match;
-  // }
 </script>
 
 <div class="match">
@@ -33,7 +22,7 @@ import type { MatchingData } from "./types/lobbyTypes";
 
 {#each match.players as player}
 <li>
-{#if player.isConnected}
+{#if player.name}
 {player.id} : {player.name} {player.isConnected}
 {:else}
 {player.id}
@@ -41,9 +30,6 @@ import type { MatchingData } from "./types/lobbyTypes";
 </li>
 {/each}
 </ul>
-<!-- {#if matchingData.joinedMatch==null}
-<button on:click={seated}>この部屋に参加する</button>
-{/if} -->
 </div>
 
 <style>
