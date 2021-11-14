@@ -30,6 +30,7 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@macfja/svelte-persistent-store": "^1.2.0",
     "bgio-firebase": "^0.3.5",
     "boardgame.io": "^0.49.4",
     "dotenv": "^10.0.0",

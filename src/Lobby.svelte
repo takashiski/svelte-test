@@ -5,24 +5,29 @@
   import type { MatchingData } from "./types/lobbyTypes";
   import type { LobbyAPI } from "boardgame.io";
   import { Cucamber } from "./Cucamber";
-
-  let matchingData: MatchingData = {
-    joinedMatch: null,
-    match: null,
-    serverUrl: null,
-  };
-  let playerName: string = "ななしのひよこ";
-  let gameLists: string[];
-  let matches: LobbyAPI.Match[];
-  let numOfPlayers: number = 3;
+  import {persist, localStorage} from "@macfja/svelte-persistent-store";
+import { writable } from "svelte/store";
 
   const { protocol, hostname, port } = window.location;
   const serverUrl =
     process.env.NODE_ENV == "production"
       ? `${protocol}//${hostname}:${port}`
       : "http://localhost:8000";
+  let matchingData: MatchingData = {
+    joinedMatch: null,
+    match: null,
+    serverUrl: null,
+  };
+  let playerName = persist(writable("ななしのひよこ"), localStorage(),`${serverUrl}playerName`);
+  let gameLists: string[];
+  let matches: LobbyAPI.Match[];
+  let numOfPlayers: number = 3;
+  let matchingDataString = persist(writable(""),localStorage(),`${serverUrl}matchingData`);
+
+  if($matchingDataString!=""){
+    matchingData = JSON.parse($matchingDataString);
+  }
   matchingData.serverUrl = serverUrl;
-  // const serverUrl = "https://vast-reaches-25264.herokuapp.com";
   const lobbyClient = new LobbyClient({ server: serverUrl });
 
   //-------------------------------------------------
@@ -52,11 +57,13 @@
       match.matchID,
       {
         // playerID: id,
-        playerName: playerName,
+        playerName: $playerName,
       }
     );
     matchingData.match = match;
     console.log(matchingData);
+    $matchingDataString = JSON.stringify(matchingData); 
+    console.log($matchingDataString);
   } 
   async function leaveMatch() {
     const result = await lobbyClient.leaveMatch(
@@ -90,7 +97,7 @@
   <CucamberClient bind:matchingData {serverUrl} onClose={leaveMatch} />
 {/if}
 <div>
-  プレイヤー名：<input type="text" bind:value={playerName} /><br />
+  プレイヤー名：<input type="text" bind:value={$playerName} /><br />
   <hr />
   <button on:click={listMatches}>部屋一覧を取得する</button><br />
   <div class="rooms">
@@ -100,7 +107,7 @@
       今立っている部屋はないです。
     {:else}
       {#each matches as match}
-        <Match bind:matchingData {match} {playerName} {lobbyClient} />
+        <Match bind:matchingData {match} {$playerName} {lobbyClient} />
         {#if matchingData.match ==null}
         <button on:click={()=>joinMatch(match)}>この部屋に参加する</button>
         {/if}
