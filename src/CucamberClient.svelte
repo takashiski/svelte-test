@@ -100,10 +100,10 @@
     参加者を待っています
     <ul>
       {#each matchData as p}
-        {#if p.name!=undefined}
-        <li>{p.id}:{p.name} {p.isConnected}</li>
-        {:else}
+        {#if p.name==undefined}
         <li>{p.id}:空席</li>
+        {:else}
+        <li>{p.id}:{p.name} {p.isConnected}</li>
         {/if}
       {/each}
     </ul>

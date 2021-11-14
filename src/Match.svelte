@@ -13,17 +13,16 @@
 
 <div class="match">
   ゲームの種類：{match.gameName}<br />
-  部屋ID:<input type="text" value={match.matchID} />{match.players.filter(
-    (p) => p.name
-  ).length}/{match.players.length}<br />
+  部屋ID:<input type="text" value={match.matchID} />{match.players.filter( (p) => p.name).length}/{match.players.length}<br />
   参加者一覧<br />
   <ul>
     {#each match.players as player}
       <li>
         {#if player.name}
-          {player.id} : {player.name} {player.isConnected}
+          {player.id} : {player.name} 
+          <!-- {player.isConnected} -->
         {:else}
-          {player.id}
+          {player.id} 空席
         {/if}
       </li>
     {/each}
