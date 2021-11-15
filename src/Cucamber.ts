@@ -42,6 +42,16 @@ export const Cucamber: Game = {
     },
     minMoves: 1
   },
+  endIf:(G:IG,ctx:Ctx)=>{
+    let loser = G.players.filter(p=>p.cucamber>30);
+    if(loser){
+      return {winner:loser[0].id.toString()};
+    }
+
+  },
+  onEnd:(G:IG,ctx:Ctx)=>{
+
+  },
   minPlayers: 3,
   maxPlayers: 8
 
