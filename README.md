@@ -1,3 +1,20 @@
+# とりあえず動かす
+
+## 全体のビルド・クライアントの起動
+
+```
+npm run dev
+```
+
+## サーバの起動
+
+```
+npm start
+```
+
+
+# その他
+
 
 ```
 npx degit sveltejs/template svelte-app
@@ -16,6 +33,7 @@ npm install --save-dev rollup-plugin-inject-process-env
 ```
 
 
+# 以下最初からあった内容
 
 
 *Psst — looking for a more complete solution? Check out [SvelteKit](https://kit.svelte.dev), the official framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.*
